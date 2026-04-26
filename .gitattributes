@@ -1,0 +1,43 @@
+# Normalize text files and keep LF in repo
+* text=auto eol=lf
+
+# Windows-specific scripts
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Linux/macOS scripts
+*.sh text eol=lf
+
+# Unity text-based assets
+*.cs text
+*.meta text
+*.unity text
+*.prefab text
+*.asset text
+*.mat text
+*.anim text
+*.controller text
+*.shader text
+*.cginc text
+*.compute text
+*.asmdef text
+*.asmref text
+
+# Common binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.tga binary
+*.psd binary
+*.exr binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.mp4 binary
+*.mov binary
+*.fbx binary
+*.blend binary
+*.ttf binary
+*.otf binary
