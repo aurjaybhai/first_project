@@ -1,6 +1,7 @@
 using NUnit.Framework.Constraints;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -10,8 +11,19 @@ public class Entity : MonoBehaviour
 {
     protected Animator anim;
     protected Rigidbody2D rb;
+    protected Collider2D col;
+    protected SpriteRenderer sr;
 
     // public Collider2D[] enemyColliders; // fixed size // cannot add or remove items on the go (faster)
+
+    [Header("Health")]
+    [SerializeField] private int maxHealth = 1;
+    [SerializeField] private int currentHealth;
+    [SerializeField] private Material damageMaterial;
+    [SerializeField] private float damageFeedbackDuration = 0.2f;
+    private Coroutine damageFeedbackCoroutine;
+
+
 
     [Header("Attack details")]
     [SerializeField] protected float attackRadius;
@@ -44,9 +56,13 @@ public class Entity : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>(); // Find the Rigidbody2D component attached to this !!e GameObject,
+        col = GetComponent<Collider2D>();
         anim = GetComponentInChildren<Animator>();
+        sr = GetComponentInChildren<SpriteRenderer>();
         //and store it in the variable rb.
         // it connects your script to the object’s 2D physics body
+
+        currentHealth = maxHealth;
     }
 
     // Update is called once per frame
@@ -67,7 +83,7 @@ public class Entity : MonoBehaviour
 
         foreach (Collider2D enemy in enemyColliders)
         {
-            Entity entityTarget = enemy.GetComponent<Entity>();
+            Entity entityTarget = enemy.GetComponentInParent<Entity>();
             entityTarget.TakeDamage();
 
         }
@@ -75,7 +91,44 @@ public class Entity : MonoBehaviour
 
     private void TakeDamage()
     {
-        throw new NotImplementedException();
+        currentHealth = currentHealth - 1;
+        PlayDamageFeedback();
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+
+    }
+
+    private void PlayDamageFeedback()
+    {
+        if (damageFeedbackCoroutine != null)
+            StopCoroutine(damageFeedbackCoroutine);
+
+        damageFeedbackCoroutine = StartCoroutine(DamageFeedbackCo());
+    }
+
+    private IEnumerator DamageFeedbackCo()
+    {
+        Material originalMat = sr.material;
+
+        sr.material = damageMaterial; // swap to white flash material
+
+        yield return new WaitForSeconds(damageFeedbackDuration);
+
+        sr.material = originalMat; // restore original material
+    }
+
+    protected virtual void Die()
+    {
+        anim.enabled = false;
+        col.enabled = false;
+
+        rb.gravityScale = 12;
+
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 15);
+
     }
 
     public void EnableMovementAndJump(bool enable)
@@ -102,7 +155,7 @@ public class Entity : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
-            TryToAttack();
+            HandleAttack();
 
     }
 
@@ -125,7 +178,7 @@ public class Entity : MonoBehaviour
         anim.SetFloat("yVelocity", rb.linearVelocity.y);
     }
 
-    protected virtual void TryToAttack()
+    protected virtual void HandleAttack()
     {
         if (isGrounded)
         {
@@ -171,7 +224,7 @@ public class Entity : MonoBehaviour
     }
 
 
-    private void Flip()
+    public void Flip()
     {
         transform.Rotate(0, 180, 0);
         facingRight = !facingRight;
@@ -184,5 +237,4 @@ public class Entity : MonoBehaviour
         Gizmos.DrawLine(transform.position, transform.position + new Vector3(0, -groundCheckDistance)); //This is the centre of the character(transfom.position)
         Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
     }
-
 }

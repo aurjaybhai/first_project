@@ -1,29 +1,29 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class PlayerAnimationEvents : MonoBehaviour
+public class Entity_AnimationEvents : MonoBehaviour
 {
 
-    private Entity player;
+    private Entity entity;
 
     private void Awake()
     {
-        player = GetComponentInParent<Entity>();
+        entity = GetComponentInParent<Entity>();
     }
 
-    public void DamageEnemies()
+    public void DamageTargets()
     {
-        player.DamageTargets();
+        entity.DamageTargets();
     }
 
     public void DisableMovementAndJump()
     {
-        player.EnableMovementAndJump(false);
+        entity.EnableMovementAndJump(false);
     }
 
     public void EnableMovementAndJump()
     {
-        player.EnableMovementAndJump(true);
+        entity.EnableMovementAndJump(true);
     }
 
     // private void AttackStarted()
