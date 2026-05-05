@@ -21,6 +21,11 @@ public class Entity : MonoBehaviour
     [SerializeField] private int currentHealth;
     [SerializeField] private Material damageMaterial;
     [SerializeField] private float damageFeedbackDuration = 0.2f;
+
+    [Header("Audio")]
+    [SerializeField] protected AudioClip attackSound;
+    protected AudioSource audioSource;
+
     private Coroutine damageFeedbackCoroutine;
 
 
@@ -59,6 +64,7 @@ public class Entity : MonoBehaviour
         col = GetComponent<Collider2D>();
         anim = GetComponentInChildren<Animator>();
         sr = GetComponentInChildren<SpriteRenderer>();
+        audioSource = GetComponentInChildren<AudioSource>();
         //and store it in the variable rb.
         // it connects your script to the object’s 2D physics body
 
@@ -100,6 +106,13 @@ public class Entity : MonoBehaviour
         }
 
     }
+
+    public void PlayAttackSound()
+    {
+        if (attackSound != null)
+            audioSource.PlayOneShot(attackSound);
+    }
+
 
     private void PlayDamageFeedback()
     {

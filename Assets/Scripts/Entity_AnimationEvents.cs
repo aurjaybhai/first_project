@@ -26,6 +26,12 @@ public class Entity_AnimationEvents : MonoBehaviour
         entity.EnableMovementAndJump(true);
     }
 
+    public void PlayAttackSound()
+    {
+        entity.PlayAttackSound();
+    }
+
+
     // private void AttackStarted()
     // {
     //     // call method from player script
